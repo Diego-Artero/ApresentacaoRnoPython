@@ -17,13 +17,13 @@ Como Utilizar
 
     Instalação das Dependências: Certifique-se de ter instalado as bibliotecas necessárias listadas no arquivo requirements.txt. Você pode instalá-las utilizando o comando:
 
-    pip install -r requirements.txt
+    pip install pandas numpy networkx pyvis
 
-    Execução do Código: Execute o script analise_redes_sociais.py em um ambiente Python. Certifique-se de ter o arquivo Excel fornecido no mesmo diretório.
+    Execução do Código: Execute o script main.py em um ambiente Python. Certifique-se de ter o arquivo Excel fornecido no mesmo diretório.
 
     Visualização dos Resultados: Após a execução do script, serão gerados arquivos HTML contendo as visualizações das redes. Abra esses arquivos em um navegador da web para interagir com as redes.
 
 Estrutura do Projeto
 
-    analise_redes_sociais.py: Script principal para análise das redes sociais.
+    main.py: Script principal para análise das redes sociais.
     ArquivoRespostas.xlsx: Arquivo Excel contendo os dados de entrada.
