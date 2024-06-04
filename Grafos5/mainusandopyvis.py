@@ -44,7 +44,7 @@ np.fill_diagonal(mtx_co, 0)
 mtx_co = mtx_co.astype(int)
 
 # Função para criar e visualizar o grafo de incidência
-def draw_incidencia_graph(corpus, usuarios):
+def desenha_grafo_incidencia(corpus, usuarios):
     G_incidencia = nx.Graph()
 
     # Adicionando nós para usuários
@@ -52,23 +52,38 @@ def draw_incidencia_graph(corpus, usuarios):
         G_incidencia.add_node(usuario, bipartite=0)
 
     # Adicionando nós para eventos
-    events = list(range(len(corpus)))
-    for event in events:
-        G_incidencia.add_node(f'Event_{event}', bipartite=1)
+    eventos = list(range(len(corpus)))
+    for evento in eventos:
+        G_incidencia.add_node(f'Evento_{evento}', bipartite=1)
 
     # Adicionando arestas entre usuários e eventos
     for col, sublist in enumerate(corpus):
         for usuario in sublist:
             if pd.notna(usuario):
-                G_incidencia.add_edge(usuario, f'Event_{col}')
+                G_incidencia.add_edge(usuario, f'Evento_{col}')
 
     # Desenhando o grafo de incidência
-    nt = Network(notebook=True)
+    nt = Network(notebook=True, height="750px", width="100%")
+    nt.barnes_hut()
     nt.from_nx(G_incidencia)
+    nt.set_options("""
+    var options = {
+      "edges": {
+        "color": {
+          "inherit": true
+        },
+        "width": 0.15,
+        "smooth": {
+          "type": "continuous"
+        },
+        "selectionWidth": 5
+      }
+    }
+    """)
     nt.show("grafo_incidencia.html")
 
 # Função para criar e visualizar o grafo de similaridade
-def draw_similarity_graph(mtx_sim, usuarios):
+def desenha_grafo_similaridade(mtx_sim, usuarios):
     G_similaridade = nx.Graph()
     for i in range(len(usuarios)):
         for j in range(i + 1, len(usuarios)):
@@ -76,12 +91,27 @@ def draw_similarity_graph(mtx_sim, usuarios):
                 G_similaridade.add_edge(usuarios[i], usuarios[j], weight=int(mtx_sim[i, j]))
 
     # Desenhando o grafo de similaridade
-    nt = Network(notebook=True)
+    nt = Network(notebook=True, height="750px", width="100%")
+    nt.barnes_hut()
     nt.from_nx(G_similaridade)
+    nt.set_options("""
+    var options = {
+      "edges": {
+        "color": {
+          "inherit": true
+        },
+        "width": 0.15,
+        "smooth": {
+          "type": "continuous"
+        },
+        "selectionWidth": 5
+      }
+    }
+    """)
     nt.show("grafo_similaridade.html")
 
 # Função para criar e visualizar o grafo de coocorrência
-def draw_cooccurrence_graph(mtx_co, usuarios):
+def desenha_grafo_coocorrencia(mtx_co, usuarios):
     G_coocorrencia = nx.Graph()
     for i in range(len(usuarios)):
         for j in range(i + 1, len(usuarios)):
@@ -89,30 +119,45 @@ def draw_cooccurrence_graph(mtx_co, usuarios):
                 G_coocorrencia.add_edge(usuarios[i], usuarios[j], weight=int(mtx_co[i, j]))
 
     # Desenhando o grafo de coocorrência
-    nt = Network(notebook=True)
+    nt = Network(notebook=True, height="750px", width="100%")
+    nt.barnes_hut()
     nt.from_nx(G_coocorrencia)
+    nt.set_options("""
+    var options = {
+      "edges": {
+        "color": {
+          "inherit": true
+        },
+        "width": 0.15,
+        "smooth": {
+          "type": "continuous"
+        },
+        "selectionWidth": 5
+      }
+    }
+    """)
     nt.show("grafo_coocorrencia.html")
 
 # Função para calcular e exibir as métricas dos grafos
-def graph_metrics(graph, graph_name):
-    print(f"Métricas do grafo {graph_name}:")
-    print("Número de vértices:", graph.number_of_nodes())
-    print("Número de arestas:", graph.number_of_edges())
-    degrees = dict(graph.degree())
-    print("Graus de vértice:", degrees)
-    mean_degree = np.mean(list(degrees.values()))
-    print("Grau médio:", mean_degree)
-    if nx.is_weighted(graph):
-        weights = nx.get_edge_attributes(graph, 'weight')
-        mean_weight = np.mean(list(weights.values()))
-        print("Força de conectividade média:", mean_weight)
-    density = nx.density(graph)
-    print("Densidade da rede:", density)
+def metricas_grafo(grafo, nome_grafo):
+    print(f"Métricas do grafo {nome_grafo}:")
+    print("Número de vértices:", grafo.number_of_nodes())
+    print("Número de arestas:", grafo.number_of_edges())
+    graus = dict(grafo.degree())
+    print("Graus de vértice:", graus)
+    grau_medio = np.mean(list(graus.values()))
+    print("Grau médio:", grau_medio)
+    if nx.is_weighted(grafo):
+        pesos = nx.get_edge_attributes(grafo, 'weight')
+        peso_medio = np.mean(list(pesos.values()))
+        print("Força de conectividade média:", peso_medio)
+    densidade = nx.density(grafo)
+    print("Densidade da rede:", densidade)
 
 # Desenhando os grafos
-draw_incidencia_graph(corpus, usuarios)
-draw_similarity_graph(mtx_sim, usuarios)
-draw_cooccurrence_graph(mtx_co, usuarios)
+desenha_grafo_incidencia(corpus, usuarios)
+desenha_grafo_similaridade(mtx_sim, usuarios)
+desenha_grafo_coocorrencia(mtx_co, usuarios)
 
 # Calculando e exibindo as métricas dos grafos
 G_similaridade = nx.Graph()
@@ -127,6 +172,7 @@ for i in range(len(usuarios)):
         if mtx_co[i, j] > 0:
             G_coocorrencia.add_edge(usuarios[i], usuarios[j], weight=int(mtx_co[i, j]))
 
-graph_metrics(G_similaridade, "de similaridade")
-graph_metrics(G_coocorrencia, "de co-ocorrência")
-graph_metrics(G_incidencia, "de incidência")
+metricas_grafo(G_similaridade, "de similaridade")
+metricas_grafo(G_coocorrencia, "de co-ocorrência")
+
+
